@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EXIF Data Results</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .header {
+            background: linear-gradient(135deg, #6e8efb, #a777e3);
+            color: white;
+            padding: 2rem 0;
+            margin-bottom: 2rem;
+        }
+        .card {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+            margin-bottom: 2rem;
+        }
+        .gps-card {
+            border-left: 5px solid #4CAF50;
+        }
+        .btn-map {
+            background: linear-gradient(135deg, #4CAF50, #2E7D32);
+            color: white;
+            border: none;
+        }
+        .table-hover tbody tr:hover {
+            background-color: rgba(110, 142, 251, 0.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="container">
+            <div class="d-flex justify-content-between align-items-center">
+                <h1 class="display-5 fw-bold">EXIF Data Results</h1>
+                <a href="/" class="btn btn-light">Upload Another Image</a>
+            </div>
+            <p class="lead">Analysis results for: {{ filename }}</p>
+        </div>
+    </div>
+
+    <div class="container">
+        {% if exif_data %}
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h2 class="h5 mb-0">EXIF Metadata</h2>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Property</th>
+                                <th>Value</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for key, value in exif_data.items() %}
+                            <tr>
+                                <td><strong>{{ key }}</strong></td>
+                                <td>
+                                    {% if value is string and value|length > 100 %}
+                                        {{ value[:100] }}...
+                                    {% else %}
+                                        {{ value }}
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="alert alert-warning">
+            <h4 class="alert-heading">No EXIF Data Found</h4>
+            <p class="mb-0">The image doesn't contain any EXIF metadata.</p>
+        </div>
+        {% endif %}
+
+        {% if gps_info %}
+        <div class="card gps-card">
+            <div class="card-header bg-success text-white">
+                <h2 class="h5 mb-0">GPS Information</h2>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>GPS Property</th>
+                                <th>Value</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for key, value in gps_info.items() %}
+                            <tr>
+                                <td><strong>{{ key }}</strong></td>
+                                <td>{{ value }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                {% if latitude and longitude %}
+                <div class="mt-4 p-3 bg-light rounded">
+                    <h3 class="h5">Extracted Coordinates</h3>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p><strong>Latitude:</strong> {{ latitude|round(6) }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>Longitude:</strong> {{ longitude|round(6) }}</p>
+                        </div>
+                    </div>
+                    {% if maps_url %}
+                    <div class="mt-3">
+                        <a href="{{ maps_url }}" target="_blank" class="btn btn-map">
+                            View on Google Maps
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+                {% else %}
+                <div class="alert alert-warning mt-3">
+                    <h4 class="alert-heading">Coordinates Not Found</h4>
+                    <p class="mb-0">Could not extract valid coordinates from the GPS data.</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        {% else %}
+        <div class="alert alert-info">
+            <h4 class="alert-heading">No GPS Data Found</h4>
+            <p class="mb-0">The image doesn't contain any GPS information.</p>
+        </div>
+        {% endif %}
+    </div>
+
+    <footer class="bg-light text-center text-muted py-4 mt-5">
+        <div class="container">
+            <p>EXIF Data Viewer &copy; 2023. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
