@@ -1,3 +1,2 @@
 # EXIF
-
-https://exif-data-2.onrender.com
+gunicorn app:app --bind 0.0.0.0:$PORT
